@@ -25,4 +25,4 @@ const syncModels = async () => {
   }
 };
 
-modules.exports = { connection, checkConnetion, syncModels };
+module.exports = { connection, checkConnetion, syncModels };
