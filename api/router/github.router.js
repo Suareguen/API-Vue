@@ -1,13 +1,22 @@
 const router = require("express").Router();
 
 const {
-    fetchPullRequests
+    fetchPullRequests,
+    fetchPullRequestFiles,
+    fetchPullRequestFilesWithContent,
+    getBlobContent,
+    fetchRepoFileStructure
 } = require("../controllers/github.controller");
 
 router.get("/", fetchPullRequests);
-// router.get("/:id", getCourse);
-// router.post("/", createCourse);
-// router.put("/:id", updateCourse);
-// router.delete("/:id", deleteCourse);
+router.get("/details", fetchPullRequestFiles);
+router.get("/content", fetchPullRequestFilesWithContent);
+router.get("/blobContent", getBlobContent);
+router.get("/structure", fetchRepoFileStructure);
+
+
+
+
+
 
 module.exports = router;
