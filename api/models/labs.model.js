@@ -21,10 +21,6 @@ const labSchema = new mongoose.Schema({
         type: String,
         enum: ["Corrected", "Not Corrected"],
         default: "Not Corrected",
-      },
-      delivered: { 
-        type: Boolean,
-        default: false
       }
     },
   ],
