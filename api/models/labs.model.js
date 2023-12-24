@@ -1,20 +1,37 @@
-const { DataTypes }  = require("sequelize");
-const { connection } = require("../../database/index");
+const mongoose = require('mongoose');
 
 
-const Lab = connection.define('lab', {
-    // Atributos
-    nombreLab: {
-      type: DataTypes.STRING,
-      allowNull: false
+const labSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  description: String,
+  course: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Course",
+  },
+  submittedBy: [
+    {
+      student: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Student",
+      },
+      status: {
+        type: String,
+        enum: ["Corrected", "Not Corrected"],
+        default: "Not Corrected",
+      },
+      delivered: { 
+        type: Boolean,
+        default: false
+      }
     },
-    descripcion: {
-      type: DataTypes.STRING
-    },
-    status: {
-      type: DataTypes.ENUM('Corregido', 'No corregido'),
-      defaultValue: 'No corregido'
-    }
-  });
+  ],
+});
 
-  module.exports = Lab
+const labModel = mongoose.model("lab", labSchema);
+
+module.exports = labModel
+
+
