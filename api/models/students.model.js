@@ -11,16 +11,16 @@ const studentSchema = new mongoose.Schema({
   },
   courses: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Course',
+    ref: 'course',
     default: []
   }],
-  email: {
-    type: String,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      "Error: Wrong email format."
-    ]
-  }
+  // email: {
+  //   type: String,
+  //   match: [
+  //     /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+  //     "Error: Wrong email format."
+  //   ]
+  // }
 });
 
 const studentModel = mongoose.model('student', studentSchema);

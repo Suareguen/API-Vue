@@ -37,11 +37,14 @@ const getLab = async (req, res) => {
 // Update a Lab by id
 const updateLab = async (req, res) => {
     try {
-        const lab = await Lab.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!lab) {
+        const labSave = await Lab.findById(req.params.id);
+        labSave.submittedBy.push(req.body.submittedBy[0])
+        labSave.save();
+        // const lab = await Lab.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!labSave) {
             return res.status(404).json({ message: 'Lab not found' });
         }
-        res.status(200).json(lab);
+        res.status(200).json(labSave);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -59,6 +62,16 @@ const deleteLab = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+const getAllLabsInfo = async (req, res) => {
+    try {
+        const labs = await Lab.find()
+        res.status(200).json(labs);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
 
 
 module.exports = {

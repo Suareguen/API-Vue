@@ -9,13 +9,13 @@ const labSchema = new mongoose.Schema({
   description: String,
   course: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
+    ref: "course",
   },
   submittedBy: [
     {
       student: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Student",
+        ref: "student",
       },
       status: {
         type: String,

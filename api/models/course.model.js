@@ -9,7 +9,7 @@ const courseSchema = new mongoose.Schema({
   description: String,
   students: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Student'
+    ref: 'student'
   }],
   labs: [{
     type: mongoose.Schema.Types.ObjectId,

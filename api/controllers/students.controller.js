@@ -1,3 +1,4 @@
+const Lab = require("../models/labs.model");
 const Student = require("../models/students.model");
 
 
@@ -62,10 +63,26 @@ const deleteStudent = async (req, res) => {
 };
 
 
+const getAllStudentsAndDataInformation = async (req, res) => {
+    try {
+        const students = await Student.find().populate('courses');
+        const labs = await Lab.find();
+        const obj = {
+            students: students,
+            labs: labs
+        }
+        res.status(200).json(obj);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
 module.exports =  {
     createStudent,
     getAllStudents,
     getStudent,
     updateStudent,
-    deleteStudent
+    deleteStudent,
+    getAllStudentsAndDataInformation
 }

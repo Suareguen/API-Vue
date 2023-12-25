@@ -5,9 +5,10 @@ const {
     getAllStudents,
     getStudent,
     updateStudent,
-    deleteStudent
+    deleteStudent,
+    getAllStudentsAndDataInformation
 } = require("../controllers/students.controller");
-
+router.get("/studentsData", getAllStudentsAndDataInformation);
 router.get("/", getAllStudents);
 router.get("/:id", getStudent);
 router.post("/", createStudent);
