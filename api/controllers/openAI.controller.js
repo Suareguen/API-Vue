@@ -1,6 +1,7 @@
 const OpenAI = require('openai')
+require('dotenv').config()
 
-const openai = new OpenAI({apiKey: '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'})
+const openai = new OpenAI({apiKey: process.env.OPENAI_KEY})
 
 async function getCorrection(req, res) {
   try {
