@@ -240,7 +240,7 @@ const createCreateCommentAndClosePullRequest = async (req, res) => {
       repo: repo,
       // Issue number is the same as the pull request number in this context
       issue_number: 2,
-      body: "Buen trabajo sigue asi!!!",
+      body: "Good Job!!!",
   });
   const close = await octokit.pulls.update({
     owner: org,
