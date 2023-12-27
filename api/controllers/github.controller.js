@@ -1,4 +1,5 @@
 const { Octokit } = require("@octokit/rest");
+const Lab = require("../models/labs.model");
 const OpenAI = require("openai");
 require("dotenv").config();
 const octokit = new Octokit({
@@ -11,7 +12,7 @@ const openai = new OpenAI({
 
 async function fetchPullRequests(req, res) {
   const org = "rebootacademy-labs";
-  const repo = "LAB-103-js-introduction";
+  const repo = "LAB-101-linux-intro";
   try {
     const pulls = await octokit.pulls.list({
       owner: org,
@@ -142,16 +143,16 @@ async function getBlobContent(req, res) {
     console.log(content); // Aquí está el contenido del archivo
 
     const completion = await openai.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: `La correccion que vas a realizar es de un alumno de programacion web, hazla como si fueses un profesor de programacion web, teniendo el enunciado establecido en este aqui: ${readmeContent}; quiero que me corrijas este ejercicio: ${content}; y me des una puntación media así como un comentario de mejora del ejercicio.`
-          },
-        ],
-        model: "gpt-3.5-turbo-1106",
-      });
-    
-      const correction = completion.choices[0]
+      messages: [
+        {
+          role: "system",
+          content: `La correccion que vas a realizar es de un alumno de programacion web, hazla como si fueses un profesor de programacion web, teniendo el enunciado establecido en este aqui: ${readmeContent}; quiero que me corrijas este ejercicio: ${content}; y me des una puntación media así como un comentario de mejora del ejercicio.`,
+        },
+      ],
+      model: "gpt-3.5-turbo-1106",
+    });
+
+    const correction = completion.choices[0];
 
     //   const response = await octokit.issues.createComment({
     //     owner: owner,
@@ -193,10 +194,73 @@ async function fetchRepoFileStructure(req, res) {
   }
 }
 
+const updatePullRequests = async (req, res) => {
+  try {
+    const org = "rebootacademy-labs";
+    const repo = "LAB-101-linux-intro";
+    const pulls = await octokit.pulls.list({
+      owner: org,
+      repo: repo,
+      state: "open",
+    });
+    const pullsUserNames = pulls.data.map((pr) => pr.user.login);
+    const lab = await Lab.findOne({ title: "LAB-101-linux-intro" }).populate({
+      path: "submittedBy.student", // Path to the student in the submittedBy array
+      model: "student", // Explicitly specifying the model name
+      populate: {
+        path: "courses", // Path to courses in the student model
+        model: "course", // Explicitly specifying the course model name
+      },
+    });
+    const filteredSubmittedBy = lab.submittedBy.filter(
+      (submission) => pullsUserNames.includes(submission.student.githubUserName) // assuming student has a username field
+    );
+    if (filteredSubmittedBy.length === 0) {
+      const submittedBy = {
+        student: "6588c4083bc68594ee061355",
+        status: "Corrected",
+      };
+      lab.submittedBy.push(submittedBy);
+      lab.save();
+    }
+    console.log(filteredSubmittedBy);
+    return res.status(200).json({ students: pullsUserNames, lab: lab });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+
+const createCreateCommentAndClosePullRequest = async (req, res) => {
+  try {
+    const org = "rebootacademy-labs";
+    const repo = "LAB-101-linux-intro";
+    const response = await octokit.issues.createComment({
+      owner: org,
+      repo: repo,
+      // Issue number is the same as the pull request number in this context
+      issue_number: 2,
+      body: "Buen trabajo sigue asi!!!",
+  });
+  const close = await octokit.pulls.update({
+    owner: org,
+    repo: repo,
+    pull_number: 2,
+    state: "closed",
+  })
+  return res.status(200).send("Comment created and pull request closed");
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+
 module.exports = {
   fetchPullRequests,
   fetchPullRequestFiles,
   fetchPullRequestFilesWithContent,
   getBlobContent,
   fetchRepoFileStructure,
+  updatePullRequests,
+  createCreateCommentAndClosePullRequest
 };
