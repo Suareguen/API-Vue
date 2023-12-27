@@ -66,7 +66,15 @@ const deleteStudent = async (req, res) => {
 const getAllStudentsAndDataInformation = async (req, res) => {
     try {
         const students = await Student.find().populate('courses');
-        const labs = await Lab.find();
+        const labs = await Lab.find().populate({
+            path: 'submittedBy.student',  // Path to the student in the submittedBy array
+            model: 'student',  // Explicitly specifying the model name
+            populate: {
+                path: 'courses',  // Path to courses in the student model
+                model: 'course'  // Explicitly specifying the course model name
+            }
+        });
+
         const obj = {
             students: students,
             labs: labs
