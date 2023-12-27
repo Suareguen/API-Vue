@@ -7,7 +7,7 @@ const {
     getBlobContent,
     fetchRepoFileStructure,
     updatePullRequests,
-    createCreateCommentAndClosePullRequest
+    createCommentAndClosePullRequest
 } = require("../controllers/github.controller");
 
 router.get("/", fetchPullRequests);
@@ -15,14 +15,8 @@ router.get("/details", fetchPullRequestFiles);
 router.get("/content", fetchPullRequestFilesWithContent);
 router.get("/blobContent", getBlobContent);
 router.get("/structure", fetchRepoFileStructure);
-router.get("/pullRequests", updatePullRequests);
-router.get("/createCommentPullRequest", createCreateCommentAndClosePullRequest);
-
-
-
-
-
-
+router.get("/pullRequests/org/:org/repo/:repo", updatePullRequests);
+router.get("/createCommentPullRequest", createCommentAndClosePullRequest);
 
 
 module.exports = router;

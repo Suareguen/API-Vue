@@ -132,16 +132,13 @@ async function getBlobContent(req, res) {
       repo: repo,
       // Puedes especificar el path si el README tiene un nombre o ruta diferente
     });
-
     // Decodifica el contenido del README que está en base64
     const readmeContent = Buffer.from(
       readmeInfo.data.content,
       "base64"
     ).toString();
-
     const content = Buffer.from(response.data.content, "base64").toString();
     console.log(content); // Aquí está el contenido del archivo
-
     const completion = await openai.chat.completions.create({
       messages: [
         {
@@ -151,15 +148,7 @@ async function getBlobContent(req, res) {
       ],
       model: "gpt-3.5-turbo-1106",
     });
-
     const correction = completion.choices[0];
-
-    //   const response = await octokit.issues.createComment({
-    //     owner: owner,
-    //     repo: repo,
-    //     issue_number: issue_number,  // Pull Request number goes here
-    //     body: comment
-    //   });
     return res.status(200).json({ comment: correction.message.content });
   } catch (error) {
     console.error("Error al obtener el contenido del blob:", error);
@@ -176,7 +165,6 @@ async function fetchRepoFileStructure(req, res) {
       repo: repo,
       branch: "main", // o 'master' dependiendo del repositorio
     });
-
     // Obtén el árbol de archivos del último commit
     const treeSha = branch.data.commit.sha;
     const tree = await octokit.git.getTree({
@@ -185,7 +173,6 @@ async function fetchRepoFileStructure(req, res) {
       tree_sha: treeSha,
       recursive: "true",
     });
-
     // Imprime la estructura de archivos
     console.log(tree.data.tree);
     return res.status(200).json({ tree: tree.data.tree });
@@ -196,14 +183,15 @@ async function fetchRepoFileStructure(req, res) {
 
 const updatePullRequests = async (req, res) => {
   try {
-    const org = "rebootacademy-labs";
-    const repo = "LAB-101-linux-intro";
+    const org = req.params.org;
+    const repo = req.params.repo;
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
       state: "open",
     });
     const pullsUserNames = pulls.data.map((pr) => pr.user.login);
+    pullsUserNames.push("juanan");
     const lab = await Lab.findOne({ title: "LAB-101-linux-intro" }).populate({
       path: "submittedBy.student", // Path to the student in the submittedBy array
       model: "student", // Explicitly specifying the model name
@@ -212,26 +200,33 @@ const updatePullRequests = async (req, res) => {
         model: "course", // Explicitly specifying the course model name
       },
     });
-    const filteredSubmittedBy = lab.submittedBy.filter(
-      (submission) => pullsUserNames.includes(submission.student.githubUserName) // assuming student has a username field
+    const submittedByUsernames = lab.submittedBy.map(
+      (submission) => submission.student.githubUserName
     );
-    if (filteredSubmittedBy.length === 0) {
-      const submittedBy = {
-        student: "6588c4083bc68594ee061355",
-        status: "Corrected",
-      };
-      lab.submittedBy.push(submittedBy);
-      lab.save();
-    }
-    console.log(filteredSubmittedBy);
-    return res.status(200).json({ students: pullsUserNames, lab: lab });
+    // Here we get the users that are not in the lab model
+    const usersNotInLab = pullsUserNames.filter(
+      (pullUserName) => !submittedByUsernames.includes(pullUserName)
+    );
+    console.log(usersNotInLab);
+
+    // if (filteredSubmittedBy.length === 0) {
+    //   // aqui buscar alumno en la base de datos
+    //   const submittedBy = {
+    //     student: "6588c4083bc68594ee061355",
+    //     status: "Not Corrected",
+    //   };
+    //   lab.submittedBy.push(submittedBy);
+    //   await lab.save();
+    // }
+    return res
+      .status(200)
+      .json({ students: pullsUserNames, lab: lab.submittedBy });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 };
 
-
-const createCreateCommentAndClosePullRequest = async (req, res) => {
+const createCommentAndClosePullRequest = async (req, res) => {
   try {
     const org = "rebootacademy-labs";
     const repo = "LAB-101-linux-intro";
@@ -241,19 +236,18 @@ const createCreateCommentAndClosePullRequest = async (req, res) => {
       // Issue number is the same as the pull request number in this context
       issue_number: 2,
       body: "Good Job!!!",
-  });
-  const close = await octokit.pulls.update({
-    owner: org,
-    repo: repo,
-    pull_number: 2,
-    state: "closed",
-  })
-  return res.status(200).send("Comment created and pull request closed");
+    });
+    const close = await octokit.pulls.update({
+      owner: org,
+      repo: repo,
+      pull_number: 2,
+      state: "closed",
+    });
+    return res.status(200).send("Comment created and pull request closed");
   } catch (error) {
     throw new Error(error.message);
   }
-}
-
+};
 
 module.exports = {
   fetchPullRequests,
@@ -262,5 +256,5 @@ module.exports = {
   getBlobContent,
   fetchRepoFileStructure,
   updatePullRequests,
-  createCreateCommentAndClosePullRequest
+  createCommentAndClosePullRequest,
 };
