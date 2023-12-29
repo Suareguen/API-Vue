@@ -8,7 +8,7 @@ const octokit = new Octokit({
 });
 
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: "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",
 });
 
 async function fetchPullRequests(req, res) {
@@ -186,7 +186,6 @@ const updatePullRequests = async (req, res) => {
   try {
     const org = req.params.org;
     const repo = req.params.repo;
-    const studentsIdsArray = [];
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
@@ -198,7 +197,7 @@ const updatePullRequests = async (req, res) => {
       sha: pr.head.sha, // or pr.merge_commit_sha depending on what you need
     }));
     // pullsUserNames.push({ username: "juanan", number: 1, sha: "1" })
-    const lab = await Lab.findOne({ title: "LAB-101-linux-intro" }).populate({
+    const lab = await Lab.findOne({ title: repo }).populate({
       path: "submittedBy.student", // Path to the student in the submittedBy array
       model: "student", // Explicitly specifying the model name
       populate: {
@@ -213,7 +212,7 @@ const updatePullRequests = async (req, res) => {
     const usersNotInLab = pullsUserNames.filter(
       (pullUserName) => !submittedByUsernames.includes(pullUserName.username)
     );
-    if (usersNotInLab.length) {
+    if (usersNotInLab.length > 0) {
       const student = await Student.findOne({
         githubUserName: usersNotInLab[0].username,
       });
@@ -223,10 +222,14 @@ const updatePullRequests = async (req, res) => {
       };
       lab.submittedBy.push(submittedBy);
       await lab.save();
-    }
-    return res
-      .status(200)
+      return res.status(200)
       .json({ message: "Pull requests updated successfully" });
+    }
+    else {
+      return res.status(200)
+      .json({ message: "No pull requests to update" });
+    }
+    
   } catch (error) {
     return res.status(500).json({ error: error });
   }
@@ -234,13 +237,13 @@ const updatePullRequests = async (req, res) => {
 
 const createCommentAndClosePullRequest = async (req, res) => {
   try {
-    const org = "rebootacademy-labs";
-    const repo = "LAB-103-js-introduction";
+    const org = "rebootacademy-labs"
+    const repo = req.params.repoName
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
       state: "open",
-    });
+    })
     const pullsUserNames = pulls.data.map((pr) => ({
       username: pr.user.login,
       number: pr.number,
@@ -250,13 +253,13 @@ const createCommentAndClosePullRequest = async (req, res) => {
       owner: org,
       repo: repo,
       commit_sha: pullsUserNames[0].sha,
-    });
-    const treeSha = commit.data.tree.sha;
+    })
+    const treeSha = commit.data.tree.sha
     const tree = await octokit.git.getTree({
       owner: org,
       repo: repo,
       tree_sha: treeSha,
-    });
+    })
     const fileSha = tree.data.tree.find(
       (file) => file.path === "iterations"
     ).sha;
@@ -264,7 +267,7 @@ const createCommentAndClosePullRequest = async (req, res) => {
       owner: org,
       repo: repo,
       tree_sha: fileSha,
-    });
+    })
     const scriptFile = iterationsTree.data.tree.find(
       (f) => f.path === "script.js"
     );
@@ -276,18 +279,18 @@ const createCommentAndClosePullRequest = async (req, res) => {
       owner: org,
       repo: repo,
       file_sha: scriptFileSha,
-    });
+    })
     const content = Buffer.from(response.data.content, "base64").toString(
       "utf-8"
-    );
+    )
     const readmeInfo = await octokit.repos.getReadme({
       owner: org,
       repo: repo,
-    });
+    })
     const readmeContent = Buffer.from(
       readmeInfo.data.content,
       "base64"
-    ).toString();
+    ).toString()
     const example = `¡Hola!
     Veo que en tu ejercicio has utilizado el método window.prompt para pedir al usuario que introduzca un valor. También has utilizado console.log para imprimir el valor introducido en la consola del navegador.
     Sin embargo, el ejercicio requería un poco más de complejidad. Te has detenido en el paso inicial y no has completado el resto del ejercicio, que incluía realizar comparaciones de cadenas y ciclos para imprimir los caracteres de los nombres de piloto y conductor.
@@ -299,31 +302,47 @@ const createCommentAndClosePullRequest = async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `Toma este comentario como ejemplo: ${ example }La correccion que vas a realizar es de un alumno de programacion web, hazla como si fueses un profesor de programacion web, teniendo el enunciado establecido en este aqui: ${readmeContent}; quiero que me corrijas este ejercicio: ${content}; y me des una puntación media así como un comentario de mejora del ejercicio.`,
+          content: `Toma este comentario como ejemplo: ${ example }La correccion que vas a realizar es de un alumno de programacion web, hazla como si fueses un profesor de programacion web, teniendo el enunciado establecido en este aqui: ${ readmeContent }; quiero que me corrijas este ejercicio: ${ content }; y me des una puntación media así como un comentario de mejora del ejercicio.`,
         },
       ],
       // model: "gpt-4",
       model: "gpt-3.5-turbo-1106",
-    });
-    const correction = completion.choices[0];
+    })
+    const correction = completion.choices[0]
     const response2 = await octokit.issues.createComment({
       owner: org,
       repo: repo,
       // Issue number is the same as the pull request number in this context
       issue_number: pullsUserNames[0].number,
       body: correction.message.content,
+    })
+    const lab = await Lab.findOne({ title: repo }).populate('submittedBy.student');
+    if (!lab) {
+      throw new Error('No se encontró el laboratorio con el título proporcionado');
+    }
+    const student = await Student.findOne({
+      githubUserName: pullsUserNames[0].username,
     });
+    // Paso 2: Buscar en 'submittedBy' el estudiante con el ID específico
+    const studentSubmission = lab.submittedBy.filter((studentSub) => studentSub.student.githubUserName === student.githubUserName);
+    console.log(studentSubmission);
+    lab.submittedBy.forEach((studentSub) => {
+      if(studentSub.student.githubUserName === student.githubUserName) {
+        studentSub.status = "Corrected";
+      }
+    });
+    await lab.save();
     // const close = await octokit.pulls.update({
     //   owner: org,
     //   repo: repo,
     //   pull_number: pullsUserNames[0].number,
     //   state: "closed",
-    // });
-    return res.status(200).send("Comment created and pull request closed");
+    // })
+    return res.status(200).send("Comment created and pull request closed")
   } catch (error) {
-    throw new Error(error.message);
+    throw new Error(error.message)
   }
-};
+}
 
 module.exports = {
   fetchPullRequests,
@@ -333,4 +352,4 @@ module.exports = {
   fetchRepoFileStructure,
   updatePullRequests,
   createCommentAndClosePullRequest,
-};
+}
