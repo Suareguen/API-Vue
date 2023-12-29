@@ -6,7 +6,6 @@ const labRouter = require('./lab.router');
 const githubRouter = require('./github.router');
 const openaiRouter = require('./openai.router');
 
-
 router.post('/webhook', (req, res) => {
     console.log('Webhook recibido:', req.body);
   
@@ -28,7 +27,6 @@ router.post('/webhook', (req, res) => {
         // Incluye otros casos según lo necesites
       }
     }
-  
     res.status(200).send('Evento de Webhook recibido');
   });
 router.use("/students", studentRouter);
