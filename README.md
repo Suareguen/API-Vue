@@ -14,7 +14,7 @@ node --watch index.js or nodemon index.js
 
 ### Github endpoints
 
-| METHOD | ENDPOINT                    DESCRIPTION                       | POST PARAMS                | RETURNS                              |
-| ------ | -------------------------  ---------------------------------- | -------------------------- | ------------------------------------ |
-| PUT    | /github/pullRequests/org/:org/repo/:repo | Update donor       | repo, org                  | "Pull Requests updated"              |
-| DELETE | /github/createCommentPullRequest/:repoName| Remove one donors | repoName                   | "Pull Request comment and closed"    |
+| METHOD | ENDPOINT                                   | POST PARAMS                | RETURNS                              |
+| ------ | -----------------------------------------  | -------------------------- | ------------------------------------ |
+| PUT    | /github/pullRequests/org/:org/repo/:repo   | repo, org                  | "Pull Requests updated"              |
+| DELETE | /github/createCommentPullRequest/:repoName | repoName                   | "Pull Request comment and closed"    |
