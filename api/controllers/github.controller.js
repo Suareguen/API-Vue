@@ -1,5 +1,6 @@
 const { Octokit } = require("@octokit/rest");
 const Lab = require("../models/labs.model");
+const Student = require("../models/students.model");
 const OpenAI = require("openai");
 require("dotenv").config();
 const octokit = new Octokit({
@@ -191,8 +192,12 @@ const updatePullRequests = async (req, res) => {
       repo: repo,
       state: "open",
     });
-    const pullsUserNames = pulls.data.map((pr) => pr.user.login);
-    pullsUserNames.push("juanan");
+    const pullsUserNames = pulls.data.map((pr) => ({
+      username: pr.user.login,
+      number: pr.number,
+      sha: pr.head.sha // or pr.merge_commit_sha depending on what you need
+    }));
+    // pullsUserNames.push({ username: "juanan", number: 1, sha: "1" })
     const lab = await Lab.findOne({ title: "LAB-101-linux-intro" }).populate({
       path: "submittedBy.student", // Path to the student in the submittedBy array
       model: "student", // Explicitly specifying the model name
@@ -206,23 +211,24 @@ const updatePullRequests = async (req, res) => {
     );
     // Here we get the users that are not in the lab model
     const usersNotInLab = pullsUserNames.filter(
-      (pullUserName) => !submittedByUsernames.includes(pullUserName)
+      (pullUserName) => !submittedByUsernames.includes(pullUserName.username)
     )
-    console.log(usersNotInLab)
     if (usersNotInLab.length) {
-    //   const submittedBy = {
-    //     student: "6588c4083bc68594ee061355",
-    //     status: "Not Corrected",
-    //   };
-    //   lab.submittedBy.push(submittedBy);
-    //   await lab.save();
-    console.log('entro')
+      const student = await Student.findOne({
+        githubUserName: usersNotInLab[0].username,
+      })
+      const submittedBy = {
+        student: student._id,
+        status: "Not Corrected",
+      };
+      lab.submittedBy.push(submittedBy);
+      await lab.save();
     }
     return res
       .status(200)
-      .json({ students: pullsUserNames, lab: lab.submittedBy });
+      .json({ message: "Pull requests updated successfully" });
   } catch (error) {
-    return res.status(500).json({ error: error.message });
+    return res.status(500).json({ error: error });
   }
 };
 
@@ -230,6 +236,16 @@ const createCommentAndClosePullRequest = async (req, res) => {
   try {
     const org = "rebootacademy-labs";
     const repo = "LAB-101-linux-intro";
+    const pulls = await octokit.pulls.list({
+      owner: org,
+      repo: repo,
+      state: "open",
+    });
+    const pullsUserNames = pulls.data.map((pr) => ({
+      username: pr.user.login,
+      number: pr.number,
+      sha: pr.head.sha // or pr.merge_commit_sha depending on what you need
+    }));
     const response = await octokit.issues.createComment({
       owner: org,
       repo: repo,
