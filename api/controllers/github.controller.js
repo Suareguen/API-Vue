@@ -288,17 +288,24 @@ const createCommentAndClosePullRequest = async (req, res) => {
       readmeInfo.data.content,
       "base64"
     ).toString();
+    const example = `¡Hola!
+    Veo que en tu ejercicio has utilizado el método window.prompt para pedir al usuario que introduzca un valor. También has utilizado console.log para imprimir el valor introducido en la consola del navegador.
+    Sin embargo, el ejercicio requería un poco más de complejidad. Te has detenido en el paso inicial y no has completado el resto del ejercicio, que incluía realizar comparaciones de cadenas y ciclos para imprimir los caracteres de los nombres de piloto y conductor.
+    Te recomendaría que vuelvas a revisar el enunciado del ejercicio y trates de completar todas las partes solicitadas.
+    Además, es importante prestar atención a la calidad del código y a su estructura. Intenta organizar tu código de una manera legible y entendible para que puedas seguir el flujo de tu programa más fácilmente. También es importante que incluyas comentarios explicativos para que otros desarrolladores puedan entender tu lógica.
+    En cuanto a la puntuación, en este momento no puedo asignar una calificación ya que el ejercicio no ha sido completado. Una vez que realices las correcciones y completes el ejercicio, estaré encantado de asignarte una calificación. ¡Sigue practicando y no dudes en consultarme si tienes alguna duda con el ejercicio!
+    `
     const completion = await openai.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: `La correccion que vas a realizar es de un alumno de programacion web, hazla como si fueses un profesor de programacion web, teniendo el enunciado establecido en este aqui: ${readmeContent}; quiero que me corrijas este ejercicio: ${content}; y me des una puntación media así como un comentario de mejora del ejercicio.`,
+          content: `Toma este comentario como ejemplo: ${ example }La correccion que vas a realizar es de un alumno de programacion web, hazla como si fueses un profesor de programacion web, teniendo el enunciado establecido en este aqui: ${readmeContent}; quiero que me corrijas este ejercicio: ${content}; y me des una puntación media así como un comentario de mejora del ejercicio.`,
         },
       ],
+      // model: "gpt-4",
       model: "gpt-3.5-turbo-1106",
     });
     const correction = completion.choices[0];
-    console.log(correction.message.content)
     const response2 = await octokit.issues.createComment({
       owner: org,
       repo: repo,
