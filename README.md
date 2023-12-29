@@ -15,6 +15,9 @@ node --watch index.js or nodemon index.js
 Cabe destacar que han de tener las **API_KEY** tanto de Github para poder acceder al contenido de los repositorios deseados así como la de openAI para poder 
 gener un comentario en Github.
 
+
+
+
 ## Enpoints importantes
 
 ### Github endpoints
