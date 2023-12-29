@@ -9,3 +9,12 @@ Posteriormente arrancamos el servidor desde la misma ruta en la qe estabamos con
 ```bash
 node --watch index.js or nodemon index.js
 ```
+
+## Enpoint importantes
+
+### Github endpoints
+
+| METHOD | ENDPOINT                    DESCRIPTION                       | POST PARAMS                | RETURNS                              |
+| ------ | -------------------------  ---------------------------------- | -------------------------- | ------------------------------------ |
+| PUT    | /github/pullRequests/org/:org/repo/:repo | Update donor       | repo, org                  | "Pull Requests updated"              |
+| DELETE | /github/createCommentPullRequest/:repoName| Remove one donors | repoName                   | "Pull Request comment and closed"    |

@@ -1,46 +1,46 @@
-const { Octokit } = require("@octokit/rest");
-const Lab = require("../models/labs.model");
-const Student = require("../models/students.model");
-const OpenAI = require("openai");
-require("dotenv").config();
+const { Octokit } = require("@octokit/rest")
+const Lab = require("../models/labs.model")
+const Student = require("../models/students.model")
+const OpenAI = require("openai")
+require("dotenv").config()
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
-});
+})
 
 const openai = new OpenAI({
-  apiKey: "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",
-});
+  apiKey: process.env.OPENAI_KEY,
+})
 
 async function fetchPullRequests(req, res) {
-  const org = "rebootacademy-labs";
-  const repo = "LAB-101-linux-intro";
+  const org = "rebootacademy-labs"
+  const repo = "LAB-101-linux-intro"
   try {
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
       state: "open",
-    });
+    })
     const forks = await octokit.repos.listForks({
       owner: org,
       repo: repo,
-    });
-    const userNamesFork = forks.data.map((fork) => fork.owner.login);
-    const pullsUserNames = pulls.data.map((pr) => pr.user.login);
-    return res.status(200).json({ pullsUserNames, userNamesFork });
+    })
+    const userNamesFork = forks.data.map((fork) => fork.owner.login)
+    const pullsUserNames = pulls.data.map((pr) => pr.user.login)
+    return res.status(200).json({ pullsUserNames, userNamesFork })
   } catch (error) {
-    console.error("Error fetching pull requests:", error);
+    console.error("Error fetching pull requests:", error)
   }
 }
 
 async function fetchPullRequestFiles(req, res) {
-  const org = "rebootacademy-labs";
-  const repo = "LAB-103-js-introduction";
+  const org = "rebootacademy-labs"
+  const repo = "LAB-103-js-introduction"
   try {
     // Fetch pull requests from the specified repository
     const pullRequests = await octokit.pulls.list({
       owner: org,
       repo: repo,
-    });
+    })
     // Map through each pull request to fetch its files
     const pullRequestFiles = await Promise.all(
       pullRequests.data.map(async (pr) => {
@@ -48,7 +48,7 @@ async function fetchPullRequestFiles(req, res) {
           owner: org,
           repo: repo,
           pull_number: pr.number,
-        });
+        })
         // Construct an object for each pull request containing the PR details and files
         return {
           number: pr.number,
@@ -60,20 +60,20 @@ async function fetchPullRequestFiles(req, res) {
             deletions: file.deletions,
             // ... other file details you need
           })),
-        };
+        }
       })
-    );
+    )
     // Return the detailed pull request information along with files as a response
-    res.status(200).json(pullRequestFiles);
+    res.status(200).json(pullRequestFiles)
   } catch (error) {
-    console.error("Error fetching pull request files:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching pull request files:", error)
+    res.status(500).json({ error: error.message })
   }
 }
 
 async function fetchPullRequestFilesWithContent(req, res) {
-  const org = "rebootacademy-labs";
-  const repo = "LAB-103-js-introduction";
+  const org = "rebootacademy-labs"
+  const repo = "LAB-103-js-introduction"
   try {
     // Fetch pull requests from the specified repository
     const pullRequests = await octokit.pulls.list({
@@ -87,12 +87,12 @@ async function fetchPullRequestFilesWithContent(req, res) {
           owner: org,
           repo: repo,
           pull_number: pr.number,
-        });
+        })
         // Fetch content for each file
         const filesWithContent = await Promise.all(
           filesResponse.data.map(async (file) => {
             // Use the raw_url for the file content or fetch using the blob API
-            const contentResponse = await fetch(file.raw_url);
+            const contentResponse = await fetch(file.raw_url)
             const content = await contentResponse.text(); // Adjust if binary file
             return {
               filename: file.filename,
@@ -107,28 +107,28 @@ async function fetchPullRequestFilesWithContent(req, res) {
           number: pr.number,
           title: pr.title,
           files: filesWithContent,
-        };
+        }
       })
-    );
+    )
     // Return the detailed pull request information along with files and their content as a response
-    res.status(200).json(pullRequestFilesDetails);
+    res.status(200).json(pullRequestFilesDetails)
   } catch (error) {
-    console.error("Error fetching pull request files with content:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching pull request files with content:", error)
+    res.status(500).json({ error: error.message })
   }
 }
 
 async function getBlobContent(req, res) {
-  const owner = "rebootacademy-labs";
-  const repo = "LAB-101-linux-intro";
-  const sha = "bfde21652f1d306abfd7ac9e8065d1e04fa15772";
+  const owner = "rebootacademy-labs"
+  const repo = "LAB-101-linux-intro"
+  const sha = "bfde21652f1d306abfd7ac9e8065d1e04fa15772"
   try {
     const response = await octokit.git.getBlob({
       owner: owner,
       repo: repo,
       file_sha: sha,
-    });
-    console.log(response); // Aquí está el contenido del archivo
+    })
+    console.log(response)// Aquí está el contenido del archivo
     const readmeInfo = await octokit.repos.getReadme({
       owner: owner,
       repo: repo,
@@ -138,8 +138,8 @@ async function getBlobContent(req, res) {
     const readmeContent = Buffer.from(
       readmeInfo.data.content,
       "base64"
-    ).toString();
-    const content = Buffer.from(response.data.content, "base64").toString();
+    ).toString()
+    const content = Buffer.from(response.data.content, "base64").toString()
     const completion = await openai.chat.completions.create({
       messages: [
         {
@@ -148,24 +148,24 @@ async function getBlobContent(req, res) {
         },
       ],
       model: "gpt-3.5-turbo-1106",
-    });
-    const correction = completion.choices[0];
-    return res.status(200).json({ content });
+    })
+    const correction = completion.choices[0]
+    return res.status(200).json({ content })
   } catch (error) {
-    console.error("Error al obtener el contenido del blob:", error);
+    console.error("Error al obtener el contenido del blob:", error)
   }
 }
 
 async function fetchRepoFileStructure(req, res) {
-  const owner = "Suareguen";
-  const repo = "LAB-103-js-introduction";
+  const owner = "Suareguen"
+  const repo = "LAB-103-js-introduction"
   try {
     // Obtén la referencia a la rama principal (p. ej., master o main)
     const branch = await octokit.repos.getBranch({
       owner: owner,
       repo: repo,
       branch: "main", // o 'master' dependiendo del repositorio
-    });
+    })
     // Obtén el árbol de archivos del último commit
     const treeSha = branch.data.commit.sha;
     const tree = await octokit.git.getTree({
@@ -173,29 +173,29 @@ async function fetchRepoFileStructure(req, res) {
       repo: repo,
       tree_sha: treeSha,
       recursive: "true",
-    });
+    })
     // Imprime la estructura de archivos
     console.log(tree.data.tree);
-    return res.status(200).json({ tree: tree.data.tree });
+    return res.status(200).json({ tree: tree.data.tree })
   } catch (error) {
-    console.error("Error fetching repository file structure:", error);
+    console.error("Error fetching repository file structure:", error)
   }
 }
 
 const updatePullRequests = async (req, res) => {
   try {
-    const org = req.params.org;
-    const repo = req.params.repo;
+    const org = req.params.org
+    const repo = req.params.repo
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
       state: "open",
-    });
+    })
     const pullsUserNames = pulls.data.map((pr) => ({
       username: pr.user.login,
       number: pr.number,
       sha: pr.head.sha, // or pr.merge_commit_sha depending on what you need
-    }));
+    }))
     // pullsUserNames.push({ username: "juanan", number: 1, sha: "1" })
     const lab = await Lab.findOne({ title: repo }).populate({
       path: "submittedBy.student", // Path to the student in the submittedBy array
@@ -204,7 +204,7 @@ const updatePullRequests = async (req, res) => {
         path: "courses", // Path to courses in the student model
         model: "course", // Explicitly specifying the course model name
       },
-    });
+    })
     const submittedByUsernames = lab.submittedBy.map(
       (submission) => submission.student.githubUserName
     );
@@ -218,38 +218,38 @@ const updatePullRequests = async (req, res) => {
       for(let i = 0; i < usersNotInLab.length; i++) {
         let student = await Student.findOne({
           githubUserName: usersNotInLab[i].username,
-        });
+        })
         if(!student) {
-          return res.status(200).json({ message: "Fail, no student found" });
+          return res.status(200).json({ message: "Fail, no student found" })
         }
         const submittedBy = {
           student: student._id,
           status: "Not Corrected",
-        };
+        }
         lab.submittedBy.push(submittedBy);
-        await lab.save();
+        await lab.save()
       }
       // const student = await Student.findOne({
       //   githubUserName: usersNotInLab[0].username,
-      // });
+      // })
       // const submittedBy = {
       //   student: student._id,
       //   status: "Not Corrected",
-      // };
-      // lab.submittedBy.push(submittedBy);
+      // }
+      // lab.submittedBy.push(submittedBy)
       // await lab.save();
       return res.status(200)
-      .json({ message: "Pull requests updated successfully" });
+      .json({ message: "Pull requests updated successfully" })
     }
     else {
       return res.status(200)
-      .json({ message: "No pull requests to update" });
+      .json({ message: "No pull requests to update" })
     }
     
   } catch (error) {
-    return res.status(500).json({ error: error });
+    return res.status(500).json({ error: error })
   }
-};
+}
 
 const createCommentAndClosePullRequest = async (req, res) => {
   try {
@@ -264,7 +264,7 @@ const createCommentAndClosePullRequest = async (req, res) => {
       username: pr.user.login,
       number: pr.number,
       sha: pr.head.sha, // or pr.merge_commit_sha depending on what you need
-    }));
+    }))
     const commit = await octokit.git.getCommit({
       owner: org,
       repo: repo,
@@ -277,18 +277,18 @@ const createCommentAndClosePullRequest = async (req, res) => {
       tree_sha: treeSha,
     })
     const fileSha = tree.data.tree.find(
-      (file) => file.path === "iterations"
-    ).sha;
+      (file) => file.path === "starter-code"
+    ).sha
     const iterationsTree = await octokit.git.getTree({
       owner: org,
       repo: repo,
       tree_sha: fileSha,
     })
     const scriptFile = iterationsTree.data.tree.find(
-      (f) => f.path === "script.js"
-    );
+      (f) => f.path === "index.js"
+    )
     if (!scriptFile || !scriptFile.sha) {
-      throw new Error("No se encontró script.js en iterations");
+      throw new Error("Not found index.js in iterations");
     }
     const scriptFileSha = scriptFile.sha;
     const response = await octokit.git.getBlob({
@@ -334,11 +334,11 @@ const createCommentAndClosePullRequest = async (req, res) => {
     })
     const lab = await Lab.findOne({ title: repo }).populate('submittedBy.student');
     if (!lab) {
-      throw new Error('No se encontró el laboratorio con el título proporcionado');
+      throw new Error('Lab not found');
     }
     const student = await Student.findOne({
       githubUserName: pullsUserNames[0].username,
-    });
+    })
     // Paso 2: Buscar en 'submittedBy' el estudiante con el ID específico
     const studentSubmission = lab.submittedBy.filter((studentSub) => studentSub.student.githubUserName === student.githubUserName);
     console.log(studentSubmission);
@@ -346,8 +346,9 @@ const createCommentAndClosePullRequest = async (req, res) => {
       if(studentSub.student.githubUserName === student.githubUserName) {
         studentSub.status = "Corrected";
       }
-    });
-    await lab.save();
+    })
+    await lab.save()
+    // Close Pull Request
     // const close = await octokit.pulls.update({
     //   owner: org,
     //   repo: repo,
