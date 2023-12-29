@@ -185,6 +185,7 @@ const updatePullRequests = async (req, res) => {
   try {
     const org = req.params.org;
     const repo = req.params.repo;
+    const studentsIdsArray = []
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
@@ -206,18 +207,17 @@ const updatePullRequests = async (req, res) => {
     // Here we get the users that are not in the lab model
     const usersNotInLab = pullsUserNames.filter(
       (pullUserName) => !submittedByUsernames.includes(pullUserName)
-    );
-    console.log(usersNotInLab);
-
-    // if (filteredSubmittedBy.length === 0) {
-    //   // aqui buscar alumno en la base de datos
+    )
+    console.log(usersNotInLab)
+    if (usersNotInLab.length) {
     //   const submittedBy = {
     //     student: "6588c4083bc68594ee061355",
     //     status: "Not Corrected",
     //   };
     //   lab.submittedBy.push(submittedBy);
     //   await lab.save();
-    // }
+    console.log('entro')
+    }
     return res
       .status(200)
       .json({ students: pullsUserNames, lab: lab.submittedBy });
