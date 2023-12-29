@@ -16,7 +16,6 @@ router.post('/webhook', (req, res) => {
     // Asegúrate de que es un evento de pull request
     if (payload.pull_request) {
       console.log(`Evento de Pull Request: ${payload.action}`);
-  
       switch (payload.action) {
         case 'opened':
           console.log('Pull Request abierto:', payload.pull_request);
