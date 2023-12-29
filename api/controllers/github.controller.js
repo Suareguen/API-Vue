@@ -8,7 +8,7 @@ const octokit = new Octokit({
 });
 
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: "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",
 });
 
 async function fetchPullRequests(req, res) {
@@ -119,15 +119,16 @@ async function fetchPullRequestFilesWithContent(req, res) {
 }
 
 async function getBlobContent(req, res) {
-  const owner = "Suareguen";
-  const repo = "LAB-103-js-introduction";
-  const sha = "7ed676df8888715562920449aa0591498e5bf12d";
+  const owner = "rebootacademy-labs";
+  const repo = "LAB-101-linux-intro";
+  const sha = "bfde21652f1d306abfd7ac9e8065d1e04fa15772";
   try {
     const response = await octokit.git.getBlob({
       owner: owner,
       repo: repo,
       file_sha: sha,
     });
+    console.log(response); // Aquí está el contenido del archivo
     const readmeInfo = await octokit.repos.getReadme({
       owner: owner,
       repo: repo,
@@ -139,7 +140,6 @@ async function getBlobContent(req, res) {
       "base64"
     ).toString();
     const content = Buffer.from(response.data.content, "base64").toString();
-    console.log(content); // Aquí está el contenido del archivo
     const completion = await openai.chat.completions.create({
       messages: [
         {
@@ -150,7 +150,7 @@ async function getBlobContent(req, res) {
       model: "gpt-3.5-turbo-1106",
     });
     const correction = completion.choices[0];
-    return res.status(200).json({ comment: correction.message.content });
+    return res.status(200).json({ content });
   } catch (error) {
     console.error("Error al obtener el contenido del blob:", error);
   }
@@ -186,7 +186,7 @@ const updatePullRequests = async (req, res) => {
   try {
     const org = req.params.org;
     const repo = req.params.repo;
-    const studentsIdsArray = []
+    const studentsIdsArray = [];
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
@@ -195,7 +195,7 @@ const updatePullRequests = async (req, res) => {
     const pullsUserNames = pulls.data.map((pr) => ({
       username: pr.user.login,
       number: pr.number,
-      sha: pr.head.sha // or pr.merge_commit_sha depending on what you need
+      sha: pr.head.sha, // or pr.merge_commit_sha depending on what you need
     }));
     // pullsUserNames.push({ username: "juanan", number: 1, sha: "1" })
     const lab = await Lab.findOne({ title: "LAB-101-linux-intro" }).populate({
@@ -212,11 +212,11 @@ const updatePullRequests = async (req, res) => {
     // Here we get the users that are not in the lab model
     const usersNotInLab = pullsUserNames.filter(
       (pullUserName) => !submittedByUsernames.includes(pullUserName.username)
-    )
+    );
     if (usersNotInLab.length) {
       const student = await Student.findOne({
         githubUserName: usersNotInLab[0].username,
-      })
+      });
       const submittedBy = {
         student: student._id,
         status: "Not Corrected",
@@ -235,7 +235,7 @@ const updatePullRequests = async (req, res) => {
 const createCommentAndClosePullRequest = async (req, res) => {
   try {
     const org = "rebootacademy-labs";
-    const repo = "LAB-101-linux-intro";
+    const repo = "LAB-103-js-introduction";
     const pulls = await octokit.pulls.list({
       owner: org,
       repo: repo,
@@ -244,21 +244,74 @@ const createCommentAndClosePullRequest = async (req, res) => {
     const pullsUserNames = pulls.data.map((pr) => ({
       username: pr.user.login,
       number: pr.number,
-      sha: pr.head.sha // or pr.merge_commit_sha depending on what you need
+      sha: pr.head.sha, // or pr.merge_commit_sha depending on what you need
     }));
-    const response = await octokit.issues.createComment({
+    const commit = await octokit.git.getCommit({
+      owner: org,
+      repo: repo,
+      commit_sha: pullsUserNames[0].sha,
+    });
+    const treeSha = commit.data.tree.sha;
+    const tree = await octokit.git.getTree({
+      owner: org,
+      repo: repo,
+      tree_sha: treeSha,
+    });
+    const fileSha = tree.data.tree.find(
+      (file) => file.path === "iterations"
+    ).sha;
+    const iterationsTree = await octokit.git.getTree({
+      owner: org,
+      repo: repo,
+      tree_sha: fileSha,
+    });
+    const scriptFile = iterationsTree.data.tree.find(
+      (f) => f.path === "script.js"
+    );
+    if (!scriptFile || !scriptFile.sha) {
+      throw new Error("No se encontró script.js en iterations");
+    }
+    const scriptFileSha = scriptFile.sha;
+    const response = await octokit.git.getBlob({
+      owner: org,
+      repo: repo,
+      file_sha: scriptFileSha,
+    });
+    const content = Buffer.from(response.data.content, "base64").toString(
+      "utf-8"
+    );
+    const readmeInfo = await octokit.repos.getReadme({
+      owner: org,
+      repo: repo,
+    });
+    const readmeContent = Buffer.from(
+      readmeInfo.data.content,
+      "base64"
+    ).toString();
+    const completion = await openai.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: `La correccion que vas a realizar es de un alumno de programacion web, hazla como si fueses un profesor de programacion web, teniendo el enunciado establecido en este aqui: ${readmeContent}; quiero que me corrijas este ejercicio: ${content}; y me des una puntación media así como un comentario de mejora del ejercicio.`,
+        },
+      ],
+      model: "gpt-3.5-turbo-1106",
+    });
+    const correction = completion.choices[0];
+    console.log(correction.message.content)
+    const response2 = await octokit.issues.createComment({
       owner: org,
       repo: repo,
       // Issue number is the same as the pull request number in this context
-      issue_number: 2,
-      body: "Good Job!!!",
+      issue_number: pullsUserNames[0].number,
+      body: correction.message.content,
     });
-    const close = await octokit.pulls.update({
-      owner: org,
-      repo: repo,
-      pull_number: 2,
-      state: "closed",
-    });
+    // const close = await octokit.pulls.update({
+    //   owner: org,
+    //   repo: repo,
+    //   pull_number: pullsUserNames[0].number,
+    //   state: "closed",
+    // });
     return res.status(200).send("Comment created and pull request closed");
   } catch (error) {
     throw new Error(error.message);
