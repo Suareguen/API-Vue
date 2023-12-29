@@ -6,6 +6,7 @@ const labRouter = require('./lab.router');
 const githubRouter = require('./github.router');
 const openaiRouter = require('./openai.router');
 
+
 router.post('/webhook', (req, res) => {
     console.log('Webhook recibido:', req.body);
     // Captura la carga útil del webhook
