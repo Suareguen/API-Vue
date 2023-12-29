@@ -30,7 +30,6 @@ router.post('/webhook', (req, res) => {
       }
     }
   
-    // Responde a GitHub que recibiste el evento
     res.status(200).send('Evento de Webhook recibido');
   });
 router.use("/students", studentRouter);
