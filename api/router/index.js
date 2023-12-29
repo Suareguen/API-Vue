@@ -8,10 +8,9 @@ const openaiRouter = require('./openai.router')
 
 
 router.post('/webhook', (req, res) => {
-    console.log('Webhook recibido:', req.body)
+    console.log('Webhook recibido:', req)
     // Captura la carga útil del webhook
     const payload = req.body
-    console.log(payload)
     // Asegúrate de que es un evento de pull request
     if (payload.pull_request) {
       console.log(`Evento de Pull Request: ${payload.action}`)
