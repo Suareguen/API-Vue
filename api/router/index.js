@@ -11,7 +11,6 @@ router.post('/webhook', (req, res) => {
   
     // Captura la carga útil del webhook
     const payload = req.body;
-  
     // Asegúrate de que es un evento de pull request
     if (payload.pull_request) {
       console.log(`Evento de Pull Request: ${payload.action}`);
