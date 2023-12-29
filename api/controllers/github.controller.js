@@ -8,7 +8,7 @@ const octokit = new Octokit({
 });
 
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: "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",
 });
 
 async function fetchPullRequests(req, res) {
@@ -213,15 +213,31 @@ const updatePullRequests = async (req, res) => {
       (pullUserName) => !submittedByUsernames.includes(pullUserName.username)
     );
     if (usersNotInLab.length > 0) {
-      const student = await Student.findOne({
-        githubUserName: usersNotInLab[0].username,
-      });
-      const submittedBy = {
-        student: student._id,
-        status: "Not Corrected",
-      };
-      lab.submittedBy.push(submittedBy);
-      await lab.save();
+      // Aqui tener cuidado por que ahora mismo hay usuarios que están en github que no están nuestra base de datos por eso al ejecutar el bucle falla cuando quiere
+      // introducir usuarios que están en github pero no están en nuestra base de datos
+      for(let i = 0; i < usersNotInLab.length; i++) {
+        let student = await Student.findOne({
+          githubUserName: usersNotInLab[i].username,
+        });
+        if(!student) {
+          return res.status(200).json({ message: "Fail, no student found" });
+        }
+        const submittedBy = {
+          student: student._id,
+          status: "Not Corrected",
+        };
+        lab.submittedBy.push(submittedBy);
+        await lab.save();
+      }
+      // const student = await Student.findOne({
+      //   githubUserName: usersNotInLab[0].username,
+      // });
+      // const submittedBy = {
+      //   student: student._id,
+      //   status: "Not Corrected",
+      // };
+      // lab.submittedBy.push(submittedBy);
+      // await lab.save();
       return res.status(200)
       .json({ message: "Pull requests updated successfully" });
     }
