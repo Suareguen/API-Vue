@@ -5,13 +5,15 @@ const courseRouter = require('./course.router')
 const labRouter = require('./lab.router')
 const githubRouter = require('./github.router')
 const openaiRouter = require('./openai.router')
+const express = require('express')
 
 
-router.post('/webhook', (req, res) => {
+router.post('/webhook',express.json({type: 'application/json'}), (req, res) => {
     console.log('Webhook recibido:', req.body)
     // Captura la carga útil del webhook
     const payload = req.body
     // Asegúrate de que es un evento de pull request
+    console.log(payload.pull_request)
     if (payload.pull_request) {
       console.log(`Evento de Pull Request: ${payload.action}`)
       switch (payload.action) {
@@ -27,7 +29,7 @@ router.post('/webhook', (req, res) => {
       }
     }
     res.status(200).send('Evento de Webhook recibido')
-  });
+  })
 router.use("/students", studentRouter)
 router.use("/courses", courseRouter)
 router.use("/labs", labRouter)
