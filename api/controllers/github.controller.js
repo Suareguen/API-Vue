@@ -219,6 +219,8 @@ const updatePullRequests = async (req, res) => {
         let student = await Student.findOne({
           githubUserName: usersNotInLab[i].username,
         })
+        // Esto aquí está hecho para el testeo, ya que al no tener a
+        // todos los usuarios de Github en mi BBDD da fallos al hacer las operaciones, así que cuidado con ello.
         if(!student) {
           return res.status(200).json({ message: "Fail, no student found" })
         }
