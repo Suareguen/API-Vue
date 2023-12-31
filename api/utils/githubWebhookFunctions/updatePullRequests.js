@@ -7,7 +7,7 @@ const updatePullRequests = async (event, body) => {
         console.log(event)
         console.log(body.sender.login)
         console.log(body.repository.name)
-        console.log(body.owner.name)
+        console.log(body.repository.owner.name)
     } catch (error) {
         throw new Error(error)
     }    
