@@ -16,8 +16,6 @@ Cabe destacar que han de tener las **API_KEY** tanto de Github para poder accede
 gener un comentario en Github.
 
 
-
-
 ## Endpoints importantes
 
 ### Github endpoints
