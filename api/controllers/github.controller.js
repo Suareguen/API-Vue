@@ -228,7 +228,7 @@ const updatePullRequests = async (req, res) => {
           student: student._id,
           status: "Not Corrected",
         }
-        lab.submittedBy.push(submittedBy);
+        lab.submittedBy.push(submittedBy)
         await lab.save()
       }
       // const student = await Student.findOne({

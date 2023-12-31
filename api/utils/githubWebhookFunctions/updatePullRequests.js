@@ -31,6 +31,24 @@ const updatePullRequests = async (event, body) => {
             return student === sender
           })
           console.log(studentInLAb)
+          if(studentInLAb.length === 0){
+            let student = await Student.findOne({
+                githubUserName: sender,
+              })
+              console.log(student)
+              const submittedBy = {
+                student: student._id,
+                status: "Not Corrected",
+              }
+              lab.submittedBy.push(submittedBy)
+              await lab.save()
+            console.log("Student in lab")
+            return 'Student in lab'
+          }
+          else {
+            console.log("Student not in lab")
+            return 'Student not in lab'
+          }
           // Here we get the users that are not in the lab model
     } catch (error) {
         throw new Error(error)
