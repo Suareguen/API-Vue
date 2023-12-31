@@ -11,22 +11,23 @@ const express = require('express')
 router.post('/webhook',express.json({type: 'application/json'}), (req, res) => {
     console.log('Webhook recibido:', req.body)
     // Captura la carga útil del webhook
-    const payload = req.body
     // Asegúrate de que es un evento de pull request
-    console.log(payload.pull_request)
-    if (payload.pull_request) {
-      console.log(`Evento de Pull Request: ${payload.action}`)
-      switch (payload.action) {
-        case 'opened':
-          console.log('Pull Request abierto:', payload.pull_request)
-          // Aquí puedes hacer algo con la información del pull request abierto
-          break
-        case 'closed':
-          console.log('Pull Request cerrado:', payload.pull_request)
-          // Manejar un pull request cerrado
-          break
-        // Incluye otros casos según lo necesites
+    const githubEvent = request.headers['x-github-event'];
+    console.log(githubEvent)
+    if (githubEvent === 'issues') {
+      const data = request.body;
+      const action = data.action;
+      if (action === 'opened') {
+        console.log(`An issue was opened with this title: ${data.issue.title}`);
+      } else if (action === 'closed') {
+        console.log(`An issue was closed by ${data.issue.user.login}`);
+      } else {
+        console.log(`Unhandled action for the issue event: ${action}`);
       }
+    } else if (githubEvent === 'ping') {
+      console.log('GitHub sent the ping event');
+    } else {
+      console.log(`Unhandled event: ${githubEvent}`);
     }
     res.status(200).send('Evento de Webhook recibido')
   })
