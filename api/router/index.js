@@ -9,7 +9,7 @@ const express = require('express')
 
 
 router.post('/webhook',express.json({type: 'application/json'}), (req, res) => {
-    console.log('Webhook recibido:', req.body)
+   /*  console.log('Webhook recibido:', req.body) */
     // Captura la carga útil del webhook
     // Asegúrate de que es un evento de pull request
     const githubEvent = req.headers['x-github-event'];
