@@ -16,7 +16,7 @@ const updatePullRequests = async (event, body) => {
         const repo = body.repository.name
         const sender = body.sender.login
   
-        const lab = await Lab.findOne({ title: repo }).populate({
+        const lab = await Lab.findOne({ title: 'LAB-103-js-introduction' }).populate({
             path: "submittedBy.student", // Path to the student in the submittedBy array
             model: "student", // Explicitly specifying the model name
             populate: {
