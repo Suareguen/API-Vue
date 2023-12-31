@@ -18,7 +18,7 @@ gener un comentario en Github.
 
 
 
-## Enpoints importantes
+## Endpoints importantes
 
 ### Github endpoints
 
