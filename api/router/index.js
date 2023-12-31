@@ -1,5 +1,5 @@
 const router = require("express").Router()
-
+const updatePullRequests = require("../utils/githubWebhookFunctions/updatePullRequests")
 const studentRouter = require("./student.router")
 const courseRouter = require('./course.router') 
 const labRouter = require('./lab.router')
@@ -27,7 +27,8 @@ router.post('/webhook',express.json({type: 'application/json'}), (req, res) => {
     } else if (githubEvent === 'ping') {
       console.log('GitHub sent the ping event');
     } else {
-      console.log(`Unhandled event: ${githubEvent}`);
+      console.log(`Unhandled event: ${githubEvent}`)
+      updatePullRequests(githubEvent, req.body)
     }
     res.status(200).send('Evento de Webhook recibido')
   })
