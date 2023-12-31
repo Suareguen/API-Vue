@@ -12,10 +12,10 @@ router.post('/webhook',express.json({type: 'application/json'}), (req, res) => {
     console.log('Webhook recibido:', req.body)
     // Captura la carga útil del webhook
     // Asegúrate de que es un evento de pull request
-    const githubEvent = request.headers['x-github-event'];
+    const githubEvent = req.headers['x-github-event'];
     console.log(githubEvent)
     if (githubEvent === 'issues') {
-      const data = request.body;
+      const data = req.body;
       const action = data.action;
       if (action === 'opened') {
         console.log(`An issue was opened with this title: ${data.issue.title}`);
