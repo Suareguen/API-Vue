@@ -28,7 +28,7 @@ const updatePullRequests = async (event, body) => {
             (submission) => submission.student.githubUserName
           )
           const studentInLAb = submittedByUsernames.filter((student) => {
-            return student.student.githubUserName === sender
+            return student === sender
           })
           console.log(studentInLAb)
           // Here we get the users that are not in the lab model
