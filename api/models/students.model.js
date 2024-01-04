@@ -9,6 +9,12 @@ const studentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  email: {
+    type: String,
+  },
+  password: {
+    type: String,
+  },
   courses: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'course',

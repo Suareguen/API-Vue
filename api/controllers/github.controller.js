@@ -211,7 +211,7 @@ const updatePullRequests = async (req, res) => {
     // Here we get the users that are not in the lab model
     const usersNotInLab = pullsUserNames.filter(
       (pullUserName) => !submittedByUsernames.includes(pullUserName.username)
-    );
+    )
     if (usersNotInLab.length > 0) {
       // Aqui tener cuidado por que ahora mismo hay usuarios que están en github que no están nuestra base de datos por eso al ejecutar el bucle falla cuando quiere
       // introducir usuarios que están en github pero no están en nuestra base de datos
@@ -342,11 +342,11 @@ const createCommentAndClosePullRequest = async (req, res) => {
       githubUserName: pullsUserNames[0].username,
     })
     // Paso 2: Buscar en 'submittedBy' el estudiante con el ID específico
-    const studentSubmission = lab.submittedBy.filter((studentSub) => studentSub.student.githubUserName === student.githubUserName);
-    console.log(studentSubmission);
+    const studentSubmission = lab.submittedBy.filter((studentSub) => studentSub.student.githubUserName === student.githubUserName)
+    console.log(studentSubmission)
     lab.submittedBy.forEach((studentSub) => {
       if(studentSub.student.githubUserName === student.githubUserName) {
-        studentSub.status = "Corrected";
+        studentSub.status = "Corrected"
       }
     })
     await lab.save()
