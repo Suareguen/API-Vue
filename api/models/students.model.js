@@ -20,6 +20,11 @@ const studentSchema = new mongoose.Schema({
     ref: 'course',
     default: []
   }],
+  role: {
+    type: String,
+    required: true,
+    enum: ['admin', 'student']
+  }
   // email: {
   //   type: String,
   //   match: [
