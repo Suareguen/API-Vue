@@ -24,6 +24,12 @@ Para la creaciñon y manejo del webhook de Github basta con seguir los pasos en 
 - Crear: [Link](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
 - Manejar: [Link](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
 
+
+## Modelos
+
+Los models existentes son: Courses, Labs y Students.
+
+
 ## Endpoints
 
 ### Github endpoints
@@ -32,6 +38,9 @@ Para la creaciñon y manejo del webhook de Github basta con seguir los pasos en 
 | ------ | -----------------------------------------  | -------------------------- | ------------------------------------ |
 | PUT    | /github/pullRequests/org/:org/repo/:repo   | repo, org                  | "Pull Requests updated"              |
 | DELETE | /github/createCommentPullRequest/:repoName | repoName                   | "Pull Request comment and closed"    |
+
+Estos dos endpoint lo que nos permiten hacer es actualizar en nuestra base datos los usuarios que hayan entregado un lab y lo establece como no corregido, siempre y cuando el usuario que hace el Pull Request es´te en nuestra base de datos, por otro lado el otro endpoint lo que nos permite es corregir los Pull Requests que estén abiertos y nos crea un comentario para los mismos, cerrándonos el mismo posteriormente y por último nos actualiza en nuestra base de datos al usuario que estaba como no corregido pero entregadoa acorregido.
+
 
 ### Courses endpoints
 
