@@ -18,8 +18,8 @@ generar una correción y un comentario en Github al ejercicio corregiido.
 **Importante:** la mayoría de las rutas requieren de token para acceder a ellas.
 
 Para la creaciñon y manejo del webhook de Github basta con seguir los pasos en la doumentsción que nos suministra Github:
-- Crear: url(https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
-- Manejar: url(https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
+- Crear: [Link](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
+- Manejar: [Link]url(https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
 
 ## Endpoints
 
