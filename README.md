@@ -15,11 +15,14 @@ node --watch index.js or nodemon index.js
 Cabe destacar que han de tener las **API_KEY** tanto de Github para poder acceder al contenido de los repositorios deseados así como la de openAI para poder 
 generar una correción y un comentario en Github al ejercicio corregiido.
 
+Para la creación del token de Github lo podemos hacer siguiendo las instrucciones del siguente link: [Link](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+Para la **API_KEY** de openAI bastará con registrarnos y crear una key en el apartado "API KEYS", cabe destacar que para el uso de esta API hace falta ingresar un mínimo de 5 euros para poder empezar a hacer peticiones, a su vez dependiendo del tipo de modelo (got4, gpy-3.5, etc) que usemos nuestras peticiones serán más costosas o no.
+
 **Importante:** la mayoría de las rutas requieren de token para acceder a ellas.
 
 Para la creaciñon y manejo del webhook de Github basta con seguir los pasos en la doumentsción que nos suministra Github:
 - Crear: [Link](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
-- Manejar: [Link]url(https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
+- Manejar: [Link](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
 
 ## Endpoints
 
