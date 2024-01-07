@@ -23,7 +23,8 @@ API Keys Necessity:
 - GitHub: Access to the desired repositories mandates a GitHub API key. Generate one by adhering to the guidelines provided in the [GitHub Documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 - OpenAI: To leverage OpenAI's capabilities for generating corrections and comments on GitHub exercises, registration and generation of an API key in the "API KEYS" section are essential. Be aware that utilizing OpenAI's API involves a cost contingent on the model and usage volume.
 
-- Important Considerations
+
+**Important Considerations**
 
 Token Authentication: Most routes necessitate an access token for authentication purposes.
 Costs and Setup: Utilizing APIs, especially OpenAI, may entail varied costs based on the chosen model and request volume.
