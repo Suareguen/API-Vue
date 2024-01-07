@@ -13,7 +13,7 @@ node --watch index.js or nodemon index.js
 **Importante:** Cabe destacar que has de tener la base de datos creada en mongo, en mi caso la tengo en local, así que para gusto de cada uno que lo use de la manera que mejor le convenga.
 
 Cabe destacar que han de tener las **API_KEY** tanto de Github para poder acceder al contenido de los repositorios deseados así como la de openAI para poder 
-gener un comentario en Github.
+generar una correción y un comentario en Github al ejercicio corregiido.
 
 **Importante:** la mayoría de las rutas requieren de token para acceder a ellas.
 
