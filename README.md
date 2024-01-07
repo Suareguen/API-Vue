@@ -27,7 +27,7 @@ API Keys Necessity:
 Token Authentication: Most routes necessitate an access token for authentication purposes.
 Costs and Setup: Utilizing APIs, especially OpenAI, may entail varied costs based on the chosen model and request volume.
 GitHub Webhook Configuration
-For the creation and management of GitHub webhooks, refer to the official documentation:
+For the creation and management of GitHub webhooks, refer to the official documentation: [Create webhook](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks) and [Handle webhook](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
 
 - Create: [Link](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
 - Handle: [Link](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
