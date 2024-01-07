@@ -26,8 +26,9 @@ API Keys Necessity:
 
 **Important Considerations**
 
-Token Authentication: Most routes necessitate an access token for authentication purposes.
-Costs and Setup: Utilizing APIs, especially OpenAI, may entail varied costs based on the chosen model and request volume.
+- Token Authentication: Most routes necessitate an access token for authentication purposes.
+
+- Costs and Setup: Utilizing APIs, especially OpenAI, may entail varied costs based on the chosen model and request volume.
 
 ### GitHub Webhook Configuration
 
