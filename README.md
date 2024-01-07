@@ -1,34 +1,41 @@
-# API-Vue
-API REST realizada con las siguientes tecnologías: Express JS, MongoDB y Mongoose.
-Inicialización de proyecto:
-En primer lugar, accedemos a la carpeta raíz donde se encuentra el ```package.json``` e instlamos las dependencias:
+# API-Vue Documentation
+
+## Overview
+API-Vue is a sophisticated REST API constructed utilizing Express JS, MongoDB, and Mongoose technologies.
+
+### Project Initialization
+
+**Setting Up**: Commence by navigating to the root directory where the `package.json` is located and execute the following command to install all dependencies:
+
 ```bash
-npm install or npm i
+   npm install or npm i
 ```
-Posteriormente arrancamos el servidor desde la misma ruta en la qe estabamos con cualquiera de los siguientes comandos:
+**Server Activation:** Continue by initiating the server from the same directory employing one of the subsequent commands:
 ```bash
 node --watch index.js or nodemon index.js
 ```
 
-**Importante:** Cabe destacar que has de tener la base de datos creada en mongo, en mi caso la tengo en local, así que para gusto de cada uno que lo use de la manera que mejor le convenga.
+Prerequisites
+Database Configuration: It's imperative to establish and configure a MongoDB database. The specific setup might vary, accommodating personal preferences and either local or remote configurations.
 
-Es necesario tener las **API_KEY** tanto de Github para poder acceder al contenido de los repositorios deseados así como la de openAI para poder 
-generar una correción y un comentario en Github al ejercicio corregiido.
+API Keys Necessity:
 
-Para la creación del token de Github lo podemos hacer siguiendo las instrucciones del siguente link: [Link](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+- GitHub: Access to the desired repositories mandates a GitHub API key. Generate one by adhering to the guidelines provided in the [GitHub Documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+- OpenAI: To leverage OpenAI's capabilities for generating corrections and comments on GitHub exercises, registration and generation of an API key in the "API KEYS" section are essential. Be aware that utilizing OpenAI's API involves a cost contingent on the model and usage volume.
 
-Para la **API_KEY** de openAI bastará con registrarnos y crear una key en el apartado "API KEYS", cabe destacar que para el uso de esta API hace falta ingresar un mínimo de 5 euros para poder empezar a hacer peticiones, a su vez dependiendo del tipo de modelo (got4, gpy-3.5, etc) que usemos nuestras peticiones serán más costosas o no.
+- Important Considerations
+Token Authentication: Most routes necessitate an access token for authentication purposes.
+Costs and Setup: Utilizing APIs, especially OpenAI, may entail varied costs based on the chosen model and request volume.
+GitHub Webhook Configuration
+For the creation and management of GitHub webhooks, refer to the official documentation:
 
-**Importante:** la mayoría de las rutas requieren de token para acceder a ellas.
-
-Para la creaciñon y manejo del webhook de Github basta con seguir los pasos en la doumentsción que nos suministra Github:
-- Crear: [Link](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
-- Manejar: [Link](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
+- Create: [Link](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
+- Handle: [Link](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
 
 
 ## Modelos
 
-Los modelos existentes son: Courses, Labs y Students.
+The API incorporates the following models: Courses, Labs, and Students.
 
 
 ## Endpoints
@@ -40,7 +47,8 @@ Los modelos existentes son: Courses, Labs y Students.
 | PUT    | /github/pullRequests/org/:org/repo/:repo   | repo, org                  | "Pull Requests updated"              |
 | DELETE | /github/createCommentPullRequest/:repoName | repoName                   | "Pull Request comment and closed"    |
 
-Estos dos endpoint lo que nos permiten hacer es actualizar en nuestra base datos los usuarios que hayan entregado un lab y lo establece como no corregido, siempre y cuando el usuario que hace el Pull Request es´te en nuestra base de datos, por otro lado el otro endpoint lo que nos permite es corregir los Pull Requests que estén abiertos y nos crea un comentario para los mismos, cerrándonos el mismo posteriormente y por último nos actualiza en nuestra base de datos al usuario que estaba como no corregido pero entregadoa acorregido.
+
+These two endpoints allow us to update our database with users who have submitted a lab, marking them as uncorrected, provided that the user making the Pull Requests is in our database. Conversely, the other endpoint facilitates the correction of open Pull Requests by generating a comment for them, subsequently closing them, and ultimately updating our database to reflect the user who was initially marked as uncorrected but has now been corrected.
 
 
 ### Courses endpoints
