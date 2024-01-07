@@ -24,13 +24,14 @@ API Keys Necessity:
 - OpenAI: To leverage OpenAI's capabilities for generating corrections and comments on GitHub exercises, registration and generation of an API key in the "API KEYS" section are essential. Be aware that utilizing OpenAI's API involves a cost contingent on the model and usage volume.
 
 - Important Considerations
+
 Token Authentication: Most routes necessitate an access token for authentication purposes.
 Costs and Setup: Utilizing APIs, especially OpenAI, may entail varied costs based on the chosen model and request volume.
-GitHub Webhook Configuration
+
+### GitHub Webhook Configuration
+
 For the creation and management of GitHub webhooks, refer to the official documentation: [Create webhook](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks) and [Handle webhook](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
 
-- Create: [Link](https://docs.github.com/es/webhooks/using-webhooks/creating-webhooks)
-- Handle: [Link](https://docs.github.com/es/webhooks/using-webhooks/handling-webhook-deliveries)
 
 
 ## Modelos
