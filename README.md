@@ -12,7 +12,7 @@ node --watch index.js or nodemon index.js
 
 **Importante:** Cabe destacar que has de tener la base de datos creada en mongo, en mi caso la tengo en local, así que para gusto de cada uno que lo use de la manera que mejor le convenga.
 
-Cabe destacar que han de tener las **API_KEY** tanto de Github para poder acceder al contenido de los repositorios deseados así como la de openAI para poder 
+Es necesario tener las **API_KEY** tanto de Github para poder acceder al contenido de los repositorios deseados así como la de openAI para poder 
 generar una correción y un comentario en Github al ejercicio corregiido.
 
 Para la creación del token de Github lo podemos hacer siguiendo las instrucciones del siguente link: [Link](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
@@ -27,7 +27,7 @@ Para la creaciñon y manejo del webhook de Github basta con seguir los pasos en 
 
 ## Modelos
 
-Los models existentes son: Courses, Labs y Students.
+Los modelos existentes son: Courses, Labs y Students.
 
 
 ## Endpoints
