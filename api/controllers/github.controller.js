@@ -207,8 +207,8 @@ const updatePullRequests = async (req, res) => {
     })
     const submittedByUsernames = lab.submittedBy.map(
       (submission) => submission.student.githubUserName
-    );
-    // Here we get the users that are not in the lab model
+    )
+    // Aqui los usuarios que no están el modelo Lab
     const usersNotInLab = pullsUserNames.filter(
       (pullUserName) => !submittedByUsernames.includes(pullUserName.username)
     )
@@ -245,7 +245,7 @@ const updatePullRequests = async (req, res) => {
     }
     else {
       return res.status(200)
-      .json({ message: "No pull requests to update" })
+      .json({ jsmessage: "No pull requests to update" })
     }
     
   } catch (error) {
@@ -359,7 +359,7 @@ const createCommentAndClosePullRequest = async (req, res) => {
     // })
     return res.status(200).send("Comment created and pull request closed")
   } catch (error) {
-    throw new Error(error.message)
+    throw new Error(error)
   }
 }
 

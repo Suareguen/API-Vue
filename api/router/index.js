@@ -29,7 +29,7 @@ router.post('/webhook', express.json({type: 'application/json'}), (req, res) => 
     } else if (githubEvent === 'ping') {
       console.log('GitHub sent the ping event');
     } else {
-      if(githubEvent === 'pull_request'){
+      if(githubEvent === 'pull_request' && req.body.action === 'open' || req.body.action === 'reopened'){
         updatePullRequests(req.body)
         createCommentAndClosePullRequest(req.body)
       }
@@ -39,12 +39,12 @@ router.post('/webhook', express.json({type: 'application/json'}), (req, res) => 
     }
     res.status(200).send('Evento de Webhook recibido')
   })
-router.use("/students",checkAuth, studentRouter)
+router.use("/students", studentRouter)
 router.use("/auth", require('./auth.router'))
-router.use("/courses",checkAuth, courseRouter)
-router.use("/labs",checkAuth, labRouter)
-router.use("/github",checkAuth, githubRouter)
-router.use("/openAI",checkAuth, openaiRouter)
+router.use("/courses", courseRouter)
+router.use("/labs", labRouter)
+router.use("/github", githubRouter)
+router.use("/openAI", openaiRouter)
 
 
 
