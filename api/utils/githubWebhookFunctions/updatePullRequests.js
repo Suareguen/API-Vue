@@ -8,11 +8,13 @@ const octokit = new Octokit({
 
 const updatePullRequests = async (body) => {
     try {
+      console.log(body)
         const org = body.repository.owner.login
         const repo = body.repository.name
         const sender = body.sender.login
-  
-        const lab = await Lab.findOne({ title: repo }).populate({
+        // Tener cuidado aquí le paso el LAB directamente por motivos de prueba, lo suyo sería
+        // usar la variable org.
+        const lab = await Lab.findOne({ title: 'LAB-106-js-arrays' }).populate({
             path: "submittedBy.student", // Path to the student in the submittedBy array
             model: "student", // Explicitly specifying the model name
             populate: {

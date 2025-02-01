@@ -8,7 +8,7 @@ const mongooseStart = async () => {
     await mongoose.connect(
       process.env.MONGO_URL || "mongodb://localhost:27017/",
       {
-        dbName: process.env.MONGO_DB || "test",
+        dbName: process.env.MONGO_DB || "reboot",
       }
     )
     console.log("Connected to DB")
